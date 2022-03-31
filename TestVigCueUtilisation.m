@@ -1,6 +1,7 @@
 function TestVigCueUtilisation(Subj)
 % Screen('Preference', 'SkipSyncTests',1);
 % developed by Hamid Karimi-Rouzbahani on 8/March/2022
+% modified by Hamid Karimi-Rouzbahani on 31/March/2022
 commandwindow;
 rng('default')
 if ~IsOctave
@@ -928,7 +929,8 @@ try
             'Num_moving_dots','Trials_per_block','key_pressedTotal',...
             'dot_color','dot_color2','block_target_color','FirstAppearTop1','FirstAppearTop2',...
             'FirstShadeTop1','FirstShadeTop2','response_button','xy_final_1','xy_final_2',...
-            'Block_condition','Cued_color_in_block','Bias_in_target_side_subj');
+            'Block_condition','Cued_color_in_block','Bias_in_target_side_subj','Sets_of_subjects','Blocks_per_condition',...
+            'percentage_target_cond');
         
         if SaveMovie==1
             Screen('FinalizeMovie', movie);
