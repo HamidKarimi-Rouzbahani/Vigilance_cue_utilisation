@@ -220,19 +220,19 @@ for Subj=1:max(subjects)
     Hit_rate_condition=Data{cond,2}(:,Subj); % Hit rate in condition
     Reaction_time_condition=Data{cond,7}(:,Subj); % reaction time in condition
     T = table(Hit_rate_condition,Reaction_time_condition);
-    T.Properties.VariableNames = {['Hit_rate_target_freq_',num2str(percentage_target_cond(cond))] ['RT_target_freq_',num2str(percentage_target_cond(cond))]};
+    T.Properties.VariableNames = {['Hit_rate_target_freq_',num2str(percentage_target_cond(cond)*100)] ['RT_target_freq_',num2str(percentage_target_cond(cond)*100)]};
     Ttotal=T;
     for cond=2:size(Data,1)
         
         Hit_rate_condition=Data{cond,2}(:,Subj); % Hit rate in condition
         Reaction_time_condition=Data{cond,7}(:,Subj); % reaction time in condition
         T = table(Hit_rate_condition,Reaction_time_condition);
-        T.Properties.VariableNames = {['Hit_rate_target_freq_',num2str(percentage_target_cond(cond))] ['RT_target_freq_',num2str(percentage_target_cond(cond))]};
+        T.Properties.VariableNames = {['Hit_rate_target_freq_',num2str(percentage_target_cond(cond)*100)] ['RT_target_freq_',num2str(percentage_target_cond(cond)*100)]};
         Ttotal=[Ttotal T];
     end
     Bias_target_side=Bias_in_target_side_subj(Subj,:)'; % Bias inb target side: >0.5 means more targets from left
     T = table(Bias_target_side);
-    T.Properties.VariableNames = {'More_targets_on_left(>0.5)_or_right(<0.5)'};
+    T.Properties.VariableNames = {'More_targets_on_left_above_half_or_right_below_half'};
     Ttotal=[Ttotal T];
     
     filename = ['MoM_data.xlsx']; % Change the name to anything you prefer
