@@ -1,7 +1,9 @@
 function TestVigCueUtilisation(Subj)
-% Screen('Preference', 'SkipSyncTests',1);
+Screen('Preference', 'SkipSyncTests',1);
 % developed by Hamid Karimi-Rouzbahani on 8/March/2022
 % modified by Hamid Karimi-Rouzbahani on 31/March/2022
+% modified by Hamid Karimi-Rouzbahani on 24/May/2022: whoever starts with
+% left bias ends with right bias and vice versa
 commandwindow;
 rng('default')
 if ~IsOctave
@@ -74,8 +76,10 @@ for subj=1:size(conds_perm,1)
 end
 
 % Counter-balance for Cue direction as well
-Bias_in_target_side_subj(1:size(Cued_color_in_block,1),1:size(Cued_color_in_block,2))=Bias_in_target_side;
-Bias_in_target_side_subj(size(Cued_color_in_block,1)+1:2*size(Cued_color_in_block,1),1:size(Cued_color_in_block,2))=1-Bias_in_target_side;
+Bias_in_target_side_subj(1:size(Cued_color_in_block,1),1:Blocks_per_condition)=Bias_in_target_side;
+Bias_in_target_side_subj(1:size(Cued_color_in_block,1),Blocks_per_condition+1:2*Blocks_per_condition)=1-Bias_in_target_side;
+Bias_in_target_side_subj(size(Cued_color_in_block,1)+1:2*size(Cued_color_in_block,1),1:Blocks_per_condition)=1-Bias_in_target_side;
+Bias_in_target_side_subj(size(Cued_color_in_block,1)+1:2*size(Cued_color_in_block,1),Blocks_per_condition+1:2*Blocks_per_condition)=Bias_in_target_side;
 Block_condition=repmat(Block_condition,[2 1]);
 Cued_color_in_block=repmat(Cued_color_in_block,[2 1]);
 
