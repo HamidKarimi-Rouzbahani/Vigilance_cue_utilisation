@@ -1,40 +1,36 @@
 %% Sample response processing
 % developed by Hamid Karimi-Rouzbahani on 15/June/2022
 % Modified by Hamid Karimi-Rouzbahani on 6/July/2022
+% Modified by Hamid Karimi-Rouzbahani on 4/September/2023
 
 clc
 clear all;
-
-subjects=[8 9]; % subjects you want the include in analysis
+addpath(genpath('F:\RESEARCH\Hamid\Multicentre dataset\Scripts\bayesFactor-master'))
+subjects=[1:85 87 89:92]; % subjects you want the include in analysis
 percentages=[0.5 0.09]; % Frequency of targets across conditions
-chunks = [1:6];
+chunks = [1:6]; % number of chunks
 Testing_blocks=[1:5]; % blocks you want to include in analysis
 for p=1:length(percentages)
-    for i=1:7
+    for i=1:5 % performance metrics including hit rate and RT
         Data{p,i}=nan(length(chunks)*length(Testing_blocks),max(subjects));
     end
 end
-dirs=dir();
-% or Determine where the data is stored on PC
-% dirs=dir('C:\');
 Num_moving_dots=2;
 Trials_per_block=32;
 
 %% Data preparation
 for Subj=subjects
+    address=[['data_address\All data\REXP00',sprintf( '%02d', Subj )]];
+    dirs=dir(address);
     for chunk=chunks
         for blk=Testing_blocks
             for cndss=percentages
-                %                 cndss=percentages(cns);
-                %                 [percentages]
                 correct_reaction_times_att=0;
-                %                 processs=0;
                 for i=3:size(dirs,1)
                     if  strcmp(dirs(i).name(end-3:end),'.mat') && strcmp(dirs(i).name(1:26+length(num2str(Subj))+length(num2str(chunk))+length(num2str(blk))+1),['Subj_',num2str(Subj),'_Blk_',num2str(blk),'_Chunk_',num2str(chunk),'_Freq_',sprintf('%.2f',cndss)])
-                        load(dirs(i).name);
+                        load([address,'\',dirs(i).name]);
                         Targ_Freq_Condition_blk=str2double(dirs(i).name(end-27:end-24));
-                        
-                        
+
                         mean_sampling_time=1./60;
                         for dot_num=1:Num_moving_dots*Trials_per_block
                             tr=ceil(dot_num./Num_moving_dots);
@@ -72,7 +68,6 @@ for Subj=subjects
                         reaction_times=((-dist_relative_to_boundary)./distance_change_per_sample).*mean_sampling_time;
                         reaction_times2=((-dist_relative_to_boundary2)./distance_change_per_sample2).*mean_sampling_time;
                         %% Behavioural Performance
-                        
                         % attended
                         tp_att=0;
                         tn_att=0;
@@ -129,41 +124,30 @@ for Subj=subjects
                         % Removed the unattended dots for simplicity of the data
                         
                         [~,cond]=ismember(cndss,percentages);
-                        [chunk blk cndss cond]
-                        %                         if chunk>round(length(chunks)/2)
-                        %                             chunkc=chunk-round(length(chunks)/2);
-                        %                         else
+                        [Subj chunk blk]
+
                         chunkc=chunk;
-                        %                         end
                         if Targ_Freq_Condition_blk==cndss
-                            % Accuracy
-                            Data{cond,1}((chunkc-1)*length(Testing_blocks)+blk,Subj)=(tp_att+tn_att)./(sum(top_events>0)+sum(top_events2>0));
-                            
                             % Hit rate
-                            Data{cond,2}((chunkc-1)*length(Testing_blocks)+blk,Subj)=(tp_att)./(tp_att+fn_att);
+                            Data{cond,1}((chunkc-1)*length(Testing_blocks)+blk,Subj)=(tp_att)./(tp_att+fn_att);
                             
                             % True negative rate
-                            Data{cond,3}((chunkc-1)*length(Testing_blocks)+blk,Subj)=(tn_att)./(tn_att+fp_att);
+                            Data{cond,2}((chunkc-1)*length(Testing_blocks)+blk,Subj)=(tn_att)./(tn_att+fp_att);
                             
                             % False alarm
-                            Data{cond,4}((chunkc-1)*length(Testing_blocks)+blk,Subj)=(fp_att)./(fp_att+tn_att);
+                            Data{cond,3}((chunkc-1)*length(Testing_blocks)+blk,Subj)=(fp_att)./(fp_att+tn_att);
                             
-                            % Miss
-                            Data{cond,5}((chunkc-1)*length(Testing_blocks)+blk,Subj)=(fn_att)./(tp_att+fn_att);
-                            
-                            % Dprime
-                            Data{cond,6}((chunkc-1)*length(Testing_blocks)+blk,Subj)=Data{cond,2}(blk,Subj)-Data{cond,4}(blk,Subj);
+                            % Miss rate
+                            Data{cond,4}((chunkc-1)*length(Testing_blocks)+blk,Subj)=(fn_att)./(tp_att+fn_att);
                             
                             % Reaction time
-                            Data{cond,7}((chunkc-1)*length(Testing_blocks)+blk,Subj)=correct_reaction_times_att;
+                            Data{cond,5}((chunkc-1)*length(Testing_blocks)+blk,Subj)=correct_reaction_times_att;
                         else
                             Data{cond,1}((chunkc-1)*length(Testing_blocks)+blk,Subj)=nan;
                             Data{cond,2}((chunkc-1)*length(Testing_blocks)+blk,Subj)=nan;
                             Data{cond,3}((chunkc-1)*length(Testing_blocks)+blk,Subj)=nan;
                             Data{cond,4}((chunkc-1)*length(Testing_blocks)+blk,Subj)=nan;
                             Data{cond,5}((chunkc-1)*length(Testing_blocks)+blk,Subj)=nan;
-                            Data{cond,6}((chunkc-1)*length(Testing_blocks)+blk,Subj)=nan;
-                            Data{cond,7}((chunkc-1)*length(Testing_blocks)+blk,Subj)=nan;
                         end
                     end
                 end
@@ -171,6 +155,7 @@ for Subj=subjects
         end
     end
 end
+
 %% Saving data as Excel file for analysis
 for Subj=subjects
     for cond=1:size(Data,1)
@@ -180,14 +165,12 @@ for Subj=subjects
             Data{cond,3}(:,Subj)=nan;
             Data{cond,4}(:,Subj)=nan;
             Data{cond,5}(:,Subj)=nan;
-            Data{cond,6}(:,Subj)=nan;
-            Data{cond,7}(:,Subj)=nan;
         end
     end
     cond=1;
-    Hit_rate_condition=Data{cond,2}(:,Subj); % Hit rate in condition
+    Hit_rate_condition=Data{cond,1}(:,Subj); % Hit rate in condition
     Mean_Hit_rate=nanmean(Hit_rate_condition);
-    Reaction_time_condition=Data{cond,7}(:,Subj); % reaction time in condition
+    Reaction_time_condition=Data{cond,5}(:,Subj); % reaction time in condition
     Mean_Reaction_time=nanmean(Reaction_time_condition);
     
     HR=[Hit_rate_condition;nan(5,1);Mean_Hit_rate];
@@ -199,9 +182,9 @@ for Subj=subjects
     
     for cond=2:size(Data,1)
         
-        Hit_rate_condition=Data{cond,2}(:,Subj); % Hit rate in condition
+        Hit_rate_condition=Data{cond,1}(:,Subj); % Hit rate in condition
         Mean_Hit_rate=nanmean(Hit_rate_condition);
-        Reaction_time_condition=Data{cond,7}(:,Subj); % reaction time in condition
+        Reaction_time_condition=Data{cond,5}(:,Subj); % reaction time in condition
         Mean_Reaction_time=nanmean(Reaction_time_condition);
         HR=[Hit_rate_condition;nan(5,1);Mean_Hit_rate];
         RT=[Reaction_time_condition;nan(5,1);Mean_Reaction_time];
@@ -217,38 +200,46 @@ for Subj=subjects
     [Subj]
 end
 
-%% Plotting some results
+%% Plotting the results
 
-plott=2; % 1= Accuracy; 2=RT
+plott=5; % 1= Hit Rate; 3= False Alarm; 5=RT
 gca = axes('Position',[0.22 0.25 0.775 0.72]);
 if plott==1
-    data_to_plot1=(Data{1,2}(:,subjects))*100;
-    data_to_plot2=(Data{2,2}(:,subjects))*100;    
+    data_to_plot1=(Data{1,plott}(:,subjects))*100;
+    data_to_plot2=(Data{2,plott}(:,subjects))*100;    
     miny=20;
     maxy=100;
     yticks=[0:20:100];
-else
-    data_to_plot1=Data{1,7}(:,subjects)*1000;
-    data_to_plot2=Data{2,7}(:,subjects)*1000;
-    miny=280;
-    maxy=370;
-    yticks=[280:20:380];
+elseif plott==3
+    data_to_plot1=(Data{1,plott}(:,subjects))*100;
+    data_to_plot2=(Data{2,plott}(:,subjects))*100;    
+    miny=0;
+    maxy=40;
+    yticks=[0:20:40];    
+elseif plott==5
+    data_to_plot1=Data{1,5}(:,subjects)*1000;
+    data_to_plot2=Data{2,5}(:,subjects)*1000;
+    miny=200;
+    maxy=400;
+    yticks=[200:50:400];
 end
 MeanA=(nanmean([data_to_plot1(1:15,:) data_to_plot1(16:30,:)],2));
 StdA=nanstd([data_to_plot1(1:15,:) data_to_plot1(16:30,:)]');
 MeanM=(nanmean([data_to_plot2(1:15,:) data_to_plot2(16:30,:)],2));
 StdM=nanstd([data_to_plot2(1:15,:) data_to_plot2(16:30,:)]');
-plots(1)=shadedErrorBar([1:15],MeanA,((StdA)./sqrt(size(data_to_plot1,2)))*1.96,{'color',[0.1 0.1 0.8],'LineWidth',4},1);
+plots(1)=shadedErrorBar([1:15],MeanA',((StdA)./sqrt(size(data_to_plot1,2)))*1.96,'lineprops',{'b','markerfacecolor','b','LineWidth',2},'transparent',1);
 hold on;
-plots(2)=shadedErrorBar([1:15],MeanM,((StdM)./sqrt(size(data_to_plot2,2)))*1.96,{'color',[0.8 0.1 0.1],'LineWidth',4},1);
+plots(2)=shadedErrorBar([1:15],MeanM',((StdM)./sqrt(size(data_to_plot2,2)))*1.96,'lineprops',{'r','markerfacecolor','r','LineWidth',2},'transparent',1);
 
 xticks={'','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15',''};
 xlim([0 16])
 ylim([miny maxy])
 if plott==1
-    ylabel({'Percentage of','correct trials (%)'})
-else
-    ylabel({'Reaction time on','correct trials (ms)'})
+    ylabel({'Hit rate (%)'})
+elseif plott==3
+    ylabel({'False alarm (%)'})    
+elseif plott==5
+    ylabel({'Reaction time (ms)'})
 end
 set(gca,'FontSize',20,'LineWidth',3,'XTick',...
     [0:16],'XTickLabel',{'','','','','','','','','','','','','','','','',''},...
@@ -327,4 +318,3 @@ fig.PaperSize       = pdf_paper_size;
 pdf_print_resolution   = '-r300';
 pdf_file_name=['Beh_data_Bayes_',num2str(plott)];
 % print(['\' pdf_file_name '.pdf'], '-dpdf', pdf_print_resolution)
-
