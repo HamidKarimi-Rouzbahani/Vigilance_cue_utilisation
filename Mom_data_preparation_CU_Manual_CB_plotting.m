@@ -170,40 +170,69 @@ for Subj=subjects
     end
     cond=1;
     Hit_rate_condition=Data{cond,1}(:,Subj); % Hit rate in condition
-    Mean_Hit_rate=nanmean(Hit_rate_condition);
-    FA_rate_condition=Data{cond,3}(:,Subj); % False alarm rate in condition
-    Mean_FA_rate=nanmean(FA_rate_condition);
-    Reaction_time_condition=Data{cond,5}(:,Subj); % reaction time in condition
-    Mean_Reaction_time=nanmean(Reaction_time_condition);
+    Mean_Hit_rate_all=nanmean(Hit_rate_condition);
+    Mean_Hit_rate_chunk1=nanmean(Hit_rate_condition(1:5));
+    Mean_Hit_rate_chunk2=nanmean(Hit_rate_condition(6:10));
+    Mean_Hit_rate_chunk3=nanmean(Hit_rate_condition(11:15));
 
-    HR=[Hit_rate_condition;nan(5,1);Mean_Hit_rate];
-    FA=[FA_rate_condition;nan(5,1);Mean_FA_rate];
-    RT=[Reaction_time_condition;nan(5,1);Mean_Reaction_time];
+    FA_rate_condition=Data{cond,3}(:,Subj); % False alarm rate in condition
+    Mean_FA_rate_all=nanmean(FA_rate_condition);
+    Mean_FA_rate_chunk1=nanmean(FA_rate_condition(1:5));
+    Mean_FA_rate_chunk2=nanmean(FA_rate_condition(6:10));
+    Mean_FA_rate_chunk3=nanmean(FA_rate_condition(11:15));
+
+    Reaction_time_condition=Data{cond,5}(:,Subj); % reaction time in condition
+    Mean_Reaction_time_all=nanmean(Reaction_time_condition);
+    Mean_Reaction_time_chunk1=nanmean(Reaction_time_condition(1:5));
+    Mean_Reaction_time_chunk2=nanmean(Reaction_time_condition(6:10));
+    Mean_Reaction_time_chunk3=nanmean(Reaction_time_condition(11:15));
+
+    HR=[Hit_rate_condition;nan(5,1);Mean_Hit_rate_chunk1;Mean_Hit_rate_chunk2;Mean_Hit_rate_chunk3;Mean_Hit_rate_all];
+    FA=[FA_rate_condition;nan(5,1);Mean_FA_rate_all;Mean_FA_rate_chunk1;Mean_FA_rate_chunk2;Mean_FA_rate_chunk3];
+    RT=[Reaction_time_condition;nan(5,1);Mean_Reaction_time_all;Mean_Reaction_time_chunk1;Mean_Reaction_time_chunk2;Mean_Reaction_time_chunk3];
 
     T = table(HR,FA,RT);
     T.Properties.VariableNames = {['Hit_rate_target_freq_',num2str(percentages(cond)*100)] ['FA_rate_target_freq_',num2str(percentages(cond)*100)] ['RT_target_freq_',num2str(percentages(cond)*100)]};
     Ttotal=T;
-    Data_csv_total=[HR FA RT];
+    % Data_csv_total=[HR FA RT];
 
     for cond=2:size(Data,1)
 
         Hit_rate_condition=Data{cond,1}(:,Subj); % Hit rate in condition
-        Mean_Hit_rate=nanmean(Hit_rate_condition);
-        FA_rate_condition=Data{cond,3}(:,Subj); % FA rate in condition
-        Mean_FA_rate=nanmean(FA_rate_condition);
+        Mean_Hit_rate_all=nanmean(Hit_rate_condition);
+        Mean_Hit_rate_chunk1=nanmean(Hit_rate_condition(16:20));
+        Mean_Hit_rate_chunk2=nanmean(Hit_rate_condition(21:25));
+        Mean_Hit_rate_chunk3=nanmean(Hit_rate_condition(26:30));
+
+        FA_rate_condition=Data{cond,3}(:,Subj); % False alarm rate in condition
+        Mean_FA_rate_all=nanmean(FA_rate_condition);
+        Mean_FA_rate_chunk1=nanmean(FA_rate_condition(16:20));
+        Mean_FA_rate_chunk2=nanmean(FA_rate_condition(21:25));
+        Mean_FA_rate_chunk3=nanmean(FA_rate_condition(26:30));
+
         Reaction_time_condition=Data{cond,5}(:,Subj); % reaction time in condition
-        Mean_Reaction_time=nanmean(Reaction_time_condition);
-        HR=[Hit_rate_condition;nan(5,1);Mean_Hit_rate];
-        FA=[FA_rate_condition;nan(5,1);Mean_FA_rate];
-        RT=[Reaction_time_condition;nan(5,1);Mean_Reaction_time];
+        Mean_Reaction_time_all=nanmean(Reaction_time_condition);
+        Mean_Reaction_time_chunk1=nanmean(Reaction_time_condition(16:20));
+        Mean_Reaction_time_chunk2=nanmean(Reaction_time_condition(21:25));
+        Mean_Reaction_time_chunk3=nanmean(Reaction_time_condition(26:30));
+
+        HR=[Hit_rate_condition;nan(5,1);Mean_Hit_rate_chunk1;Mean_Hit_rate_chunk2;Mean_Hit_rate_chunk3;Mean_Hit_rate_all];
+        FA=[FA_rate_condition;nan(5,1);Mean_FA_rate_all;Mean_FA_rate_chunk1;Mean_FA_rate_chunk2;Mean_FA_rate_chunk3];
+        RT=[Reaction_time_condition;nan(5,1);Mean_Reaction_time_all;Mean_Reaction_time_chunk1;Mean_Reaction_time_chunk2;Mean_Reaction_time_chunk3];
+
+
         T = table(HR,FA,RT);
         T.Properties.VariableNames = {['Hit_rate_target_freq_',num2str(percentages(cond)*100)] ['FA_rate_target_freq_',num2str(percentages(cond)*100)] ['RT_target_freq_',num2str(percentages(cond)*100)]};
         Ttotal=[Ttotal T];
-        Data_csv_total=horzcat(Data_csv_total,[HR FA RT]);
+        % Data_csv_total=horzcat(Data_csv_total,[HR FA RT]);
     end
 
+    Tlab=table(num2str([nan(1,35) '1' '2' '3' 'A']'));
+    Tlab.Properties.VariableNames = {['Chunk averaged']};
+    Ttotal2=[Ttotal Tlab];
+
     filename = ['MoM_data_CU_manually_counter_balanced.xlsx']; % Change the name to anything you prefer
-    writetable(Ttotal,filename,'Sheet',['Subj_' num2str(Subj)])
+    writetable(Ttotal2,filename,'Sheet',['Subj_' num2str(Subj)])
 
     [Subj]
 end
