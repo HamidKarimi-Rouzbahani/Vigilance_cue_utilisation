@@ -4,11 +4,13 @@
 % Modified by Hamid Karimi-Rouzbahani on 4/September/2023
 % Modified by Hamid Karimi-Rouzbahani on 17/September/2023 to produce FA as
 % well
+% Modified by Hamid Karimi-Rouzbahani on 24/September/2023 to separate
+% performance on cued and uncued sides
 
 clc
 clear all;
 addpath(genpath('F:\RESEARCH\Hamid\Multicentre dataset\Scripts\bayesFactor-master'))
-subjects=[1:85 87 89:92]; % subjects you want the include in analysis
+subjects=[1:85 87 88:91]; % subjects you want the include in analysis
 percentages=[0.5 0.09]; % Frequency of targets across conditions
 chunks = [1:6]; % number of chunks
 Testing_blocks=[1:5]; % blocks you want to include in analysis
@@ -279,7 +281,7 @@ for Subj=subjects
 end
 ccc
 %% Plotting the results
-plott=2; % 1= Hit Rate; 2= False Alarm; 3=RT
+plott=3; % 1= Hit Rate; 2= False Alarm; 3=RT
 gca = axes('Position',[0.22 0.25 0.775 0.72]);
 if plott==1
     miny=20;
