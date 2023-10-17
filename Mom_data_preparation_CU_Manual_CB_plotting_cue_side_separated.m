@@ -7,10 +7,13 @@
 % Modified by Hamid Karimi-Rouzbahani on 24/September/2023 to separate
 % performance on cued and uncued sides
 
+% Modified by Hamid Karimi-Rouzbahani on 17/October/2023 to fix some errors
+% with data collection: see the last lines in this section
+
 clc
 clear all;
 addpath(genpath('F:\RESEARCH\Hamid\Multicentre dataset\Scripts\bayesFactor-master'))
-subjects=[1:85 87 88:91]; % subjects you want the include in analysis
+subjects=[1:92]; % subjects you want the include in analysis
 percentages=[0.5 0.09]; % Frequency of targets across conditions
 chunks = [1:6]; % number of chunks
 Testing_blocks=[1:5]; % blocks you want to include in analysis
@@ -22,6 +25,8 @@ end
 Num_moving_dots=2;
 Trials_per_block=32;
 load('Bias_in_target_side_subj.mat')
+Bias_in_target_side_subj(40,:)=Bias_in_target_side_subj(41,:); % correct fot subject #40 who was labeled as #41
+Bias_in_target_side_subj(89,:)=Bias_in_target_side_subj(87,:); % correct fot subject #89 who was labeled as #87
 %% Data preparation
 for Subj=subjects
     address=[['F:\RESEARCH\Hamid\Anina\Zaid\OneDrive_2023-09-03\All data\REXP00',sprintf( '%02d', Subj )]];
